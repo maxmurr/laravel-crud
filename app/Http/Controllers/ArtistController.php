@@ -14,8 +14,10 @@ class ArtistController extends Controller
      */
     public function index()
     {
-        $artists = Artist::paginate(50);
-        return view('artists.index', ['artists' => $artists]);
+        $artists = Artist::latest()->paginate(50);
+
+        return view('artists.index', compact('artists'))
+                ->with('artists', $artists);
     }
 
     /**
@@ -25,7 +27,7 @@ class ArtistController extends Controller
      */
     public function create()
     {
-        //
+        return view('artists.create');
     }
 
     /**
@@ -36,7 +38,18 @@ class ArtistController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'songs' => 'required',
+            'genres' => 'required',
+            'popularity' => 'required',
+            'link' => 'required'
+        ]);
+
+        Artist::create($request->all());
+
+        return redirect()->route('artists.index')
+                            ->with('success', 'Added successfully.');
     }
 
     /**
@@ -47,7 +60,7 @@ class ArtistController extends Controller
      */
     public function show(Artist $artist)
     {
-        //
+        return view('artists.show', compact('artist'));
     }
 
     /**
@@ -58,7 +71,7 @@ class ArtistController extends Controller
      */
     public function edit(Artist $artist)
     {
-        //
+        return view('artists.edit', compact('artist'));
     }
 
     /**
@@ -70,7 +83,18 @@ class ArtistController extends Controller
      */
     public function update(Request $request, Artist $artist)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'songs' => 'required',
+            'genres' => 'required',
+            'popularity' => 'required',
+            'link' => 'required'
+        ]);
+
+        $artist->update($request->all());
+
+        return redirect()->route('artists.index')
+                            ->with('success', 'Updated successfully!');
     }
 
     /**
@@ -81,6 +105,8 @@ class ArtistController extends Controller
      */
     public function destroy(Artist $artist)
     {
-        //
+        $artist->delete();
+        return redirect()->route('artists.index')
+                            ->with('success', 'Deleted successfully!');
     }
 }
